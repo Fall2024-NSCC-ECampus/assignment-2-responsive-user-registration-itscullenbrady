@@ -10,12 +10,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @Controller
 public class LoginController {
 
-    final
-    UserRepository userRepository;
+    final UserRepository userRepository;
 
     public LoginController(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -24,9 +22,8 @@ public class LoginController {
     @PostMapping("/register")
     public String submitRegistration(@ModelAttribute User user, Model model) {
         UserValidation userValidation = new UserValidationImpl(userRepository);
-        ValidationResult validationResult = userValidation.validateUser(user.getUsername(),
-                user.getEmail(), user.getPassword());
-        if(!validationResult.isInputValid()) {
+        ValidationResult validationResult = userValidation.validateUser(user.getUsername(), user.getEmail(), user.getPassword());
+        if (!validationResult.isInputValid()) {
             model.addAttribute("v", validationResult);
             return "register";
         } else {
@@ -37,31 +34,26 @@ public class LoginController {
         }
     }
 
-
     @GetMapping("/register")
     public String registrationForm(Model model) {
         model.addAttribute("v", new ValidationResult(new User()));
         return "register";
     }
 
-    @PostMapping("/login")
-public String login(@RequestParam("username") String username, @RequestParam("password") String password, Model model) {
-    // Perform login validation
-    UserValidation userValidation = new UserValidationImpl(userRepository);
-    ValidationResult validationResult = userValidation.validateUser(username, "", password);
+    @PostMapping("/user-login")
+    public String login(@RequestParam("username") String username, @RequestParam("password") String password, Model model) {
+        UserValidation userValidation = new UserValidationImpl(userRepository);
+        ValidationResult validationResult = userValidation.validateUser(username, "", password);
 
-    // Check if the validation is successful
-    if (validationResult.isInputValid()) {
-        // Redirect to inside.html
-        return "redirect:/inside";
-    } else {
-        // Add error message to the model
-        model.addAttribute("error", "Invalid username or password.");
-        return "login";
+        if (validationResult.isInputValid()) {
+            return "redirect:/inside";
+        } else {
+            model.addAttribute("error", "Invalid username or password.");
+            return "login";
+        }
     }
-}
 
-    @GetMapping("/login")
+    @GetMapping("/user-login")
     public String login() {
         return "login";
     }
